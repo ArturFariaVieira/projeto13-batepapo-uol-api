@@ -110,6 +110,7 @@ app.get('/participants', async (req, res) => {
   try {
     const users = await db.collection('usuarios').find().toArray();
     res.send(users)
+    console.log(users)
   } catch (err) {
     res.sendStatus(500);
   }
@@ -121,8 +122,9 @@ app.put('/messages/:id', async (req, res) => {
   if (validabody.error) {
     return res.sendStatus(422);
   }
-  const {text} = req.body;
+  const text = req.body.text;
   const user = req.headers.user;
+  console.log(text)
   try {
     const message = await db.collection("messages").findOne({ _id: new ObjectId(id) })
     const validauser = await db.collection("usuarios").findOne({ name: user });
@@ -135,7 +137,7 @@ app.put('/messages/:id', async (req, res) => {
     if (message.from != user) {
       return res.sendStatus(401);
     }
-    await db.collection("messages").updateOne({ _id: (id) }, { $set: { text: text } })
+    await db.collection("messages").updateOne({ _id: new ObjectId(id) }, { $set:  {text: text }} )
     res.sendStatus(200)
   } catch (error) {
     res.status(500).send(error)
